@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Columns</title>
+    <style>
+        /* Style for the button and input field */
+        #addColumnBtn {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<h1>Add Columns</h1>
+
+<div>
+    <label for="columnName">Column Name:</label>
+    <input type="text" id="columnName" placeholder="Enter column name">
+    <button id="addColumnBtn">Add Column</button>
+</div>
+
+<div>
+    <h2>Added Columns:</h2>
+    <ul id="addedColumns"></ul>
+</div>
+
+<div>
+    <h3>Total Columns Added: <span id="columnCount">0</span></h3>
+</div>
+
+<button id="generateBtn" disabled>NEXT</button>
+
+<script>
+        // Track the added columns
+        const addedColumns = [];
+        const columnNameInput = document.getElementById('columnName');
+        const addColumnBtn = document.getElementById('addColumnBtn');
+        const addedColumnsList = document.getElementById('addedColumns');
+        const columnCountSpan = document.getElementById('columnCount');
+        const generateBtn = document.getElementById('generateBtn');
+
+        // Function to add a column
+        addColumnBtn.addEventListener('click', () => {
+            const columnName = columnNameInput.value.trim();
+            if (columnName) {
+                addedColumns.push(columnName);
+                const li = document.createElement('li');
+                li.textContent = columnName;
+                addedColumnsList.appendChild(li);
+                columnCountSpan.textContent = addedColumns.length;
+                columnNameInput.value = '';
+                generateBtn.disabled = false;
+            }
+        });
+
+        // Function to submit the list of columns
+        generateBtn.addEventListener('click', () => {
+            if (addedColumns.length > 0) {
+                // Create a hidden form to submit the data as POST
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/generateSchema'; // Update with your actual endpoint
+                form.style.display = 'none';
+
+                addedColumns.forEach(columnName => {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = 'columnName';
+                    input.value = columnName;
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    </script>
+</body>
+</html>
