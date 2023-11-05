@@ -6,9 +6,14 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import javax.servlet.http.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,20 +26,20 @@ public class SchemaRequest {
 
 
     @GetMapping(value = "/home")
-    public String abc(){
+    public String abc() {
         return "home";
     }
 
     @PostMapping("/generateSchema")
-    public String createSchema(@RequestParam(name = "columnName") List<String> columnNames, HttpServletRequest request, HttpSession session){
+    public String createSchema(@RequestParam(name = "columnName") List<String> columnNames, HttpServletRequest request, HttpSession session) {
         if (columnNames.isEmpty()) {
             return "schema";
         }
         try {
             String organizationId;
-            if(session.getAttribute("organizationId") == null ||session.getAttribute("organizationId").toString() == ""){
+            if (session.getAttribute("organizationId") == null || session.getAttribute("organizationId").toString() == "") {
                 organizationId = UUID.randomUUID().toString();
-            } else{
+            } else {
                 organizationId = session.getAttribute("organizationId").toString();
             }
 
@@ -53,7 +58,7 @@ public class SchemaRequest {
             if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xls") && !file.getOriginalFilename().endsWith(".xlsx")) {
                 return "Invalid file format. Please upload an Excel file.";
             }
-            if(session.getAttribute("organizationId") == null){
+            if (session.getAttribute("organizationId") == null) {
                 return "home";
             }
             XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
@@ -76,18 +81,18 @@ public class SchemaRequest {
     }
 
     @GetMapping("/download/excel")
-    public void downloadSchema(HttpServletResponse res, HttpSession session){
+    public void downloadSchema(HttpServletResponse res, HttpSession session) {
         try {
 
-            if(session.getAttribute("organizationId") == null){
+            if (session.getAttribute("organizationId") == null) {
                 return;
             }
             res.setHeader("Content-Disposition", "attachment; filename=template_data.xlsx");
             res.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
             String orgId = session.getAttribute("organizationId").toString();
-            XSSFWorkbook workbook =  schemaService.getWorkBookByOrganizationId(orgId);
-            if(workbook == null) {
+            XSSFWorkbook workbook = schemaService.getWorkBookByOrganizationId(orgId);
+            if (workbook == null) {
                 return;
             }
             workbook.write(res.getOutputStream());

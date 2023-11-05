@@ -13,7 +13,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import javax.print.Doc;
 import java.util.*;
 
 @Service
@@ -51,9 +50,9 @@ public class SchemaService {
 
             Query query = new Query(Criteria.where("_id").is(objectId).and("organizationId").is(organizationId));
             List<Document> documents = mongoTemplate.find(query, Document.class, COLLECTION_NAME);
-            if(!documents.isEmpty()){
+            if (!documents.isEmpty()) {
                 document = documents.get(0);
-            } else{
+            } else {
                 document = new Document();
                 document.put("organizationId", organizationId);
             }
@@ -147,7 +146,7 @@ public class SchemaService {
         return allColumnNames;
     }
 
-    public List<List<String>> getExcelDataFromSheet(XSSFSheet sheet, List<String> headers){
+    public List<List<String>> getExcelDataFromSheet(XSSFSheet sheet, List<String> headers) {
         List<List<String>> excelData = new ArrayList<>();
         for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
             Row dataRow = sheet.getRow(rowIndex);
@@ -161,7 +160,7 @@ public class SchemaService {
         return excelData;
     }
 
-    public List<String> getHeadersFromSheet(XSSFSheet sheet){
+    public List<String> getHeadersFromSheet(XSSFSheet sheet) {
         Row headerRow = sheet.getRow(0);
         List<String> headers = new ArrayList<>();
         for (int i = 0; i < headerRow.getLastCellNum(); i++) {
